@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Smart Event Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html { height: 100%; }
+        .login-side-img {
+            background: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .login-container { min-height: 100vh; }
+        .form-control:focus { border-color: #0d6efd; box-shadow: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid login-container">
+        <div class="row min-vh-100">
+            <div class="col-md-6 col-lg-7 d-none d-md-block login-side-img">
+                <div class="h-100 d-flex align-items-center p-5 text-white">
+                    <div>
+                        <h1 class="display-4 fw-bold">Smart Event <br>Manager</h1>
+                        <p class="lead">ISEP Data Science Project 2026</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-5 d-flex align-items-center justify-content-center bg-white">
+                <div class="w-100 p-4 p-md-5" style="max-width: 450px;">
+                    <div class="mb-5">
+                        <h2 class="fw-bold text-dark">Sign In</h2>
+                        <p class="text-muted">Enter your details to access your account</p>
+                    </div>
+
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email Address</label>
+                            <input type="email" class="form-control form-control-lg" placeholder="jina.hwang@isep.fr" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Password</label>
+                            <input type="password" class="form-control form-control-lg" placeholder="••••••••" required>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-4">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="saveLogin">
+                                <label class="form-check-label small" for="saveLogin">Keep me logged in</label>
+                            </div>
+                            <a href="#" class="small text-decoration-none">Forgot?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm mb-4">Login to SmartEvent</button>
+
+                        <div class="text-center">
+                            <p class="small text-muted">New here? <a href="#" class="fw-bold text-primary text-decoration-none">Create an account</a></p>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-5 text-center">
+                        <a href="index.html" class="text-muted text-decoration-none small">← Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
