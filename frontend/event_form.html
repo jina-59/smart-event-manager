@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event | Smart Event Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .form-container { max-width: 800px; margin: 50px auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .section-title { border-left: 5px solid #0d6efd; padding-left: 15px; margin-bottom: 25px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">SmartEvent</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <h2 class="text-center fw-bold mb-5">Create New Event 🚀</h2>
+            
+            <form id="eventForm">
+                <div class="section-title h5 text-primary">Basic Information</div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Event Title</label>
+                    <input type="text" class="form-control" placeholder="e.g. Paris Data Science Meetup" required>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Category</label>
+                        <select class="form-select">
+                            <option>Technology</option>
+                            <option>Music</option>
+                            <option>Education</option>
+                            <option>Business</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Event Date</label>
+                        <input type="date" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="section-title h5 text-primary">Location & Type</div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold d-block">Select Event Type</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="eventType" id="offline" value="offline" checked>
+                        <label class="btn btn-outline-primary" for="offline"><i class="bi bi-geo-alt me-2"></i>Offline</label>
+
+                        <input type="radio" class="btn-check" name="eventType" id="online" value="online">
+                        <label class="btn btn-outline-primary" for="online"><i class="bi bi-laptop me-2"></i>Online</label>
+
+                        <input type="radio" class="btn-check" name="eventType" id="hybrid" value="hybrid">
+                        <label class="btn btn-outline-primary" for="hybrid"><i class="bi bi-people me-2"></i>Hybrid</label>
+                    </div>
+                </div>
+
+                <div id="locationField" class="mb-4">
+                    <label class="form-label fw-semibold">Physical Address</label>
+                    <input type="text" class="form-control" placeholder="Enter venue address in Paris">
+                </div>
+                <div id="linkField" class="mb-4 d-none">
+                    <label class="form-label fw-semibold">Online Meeting Link</label>
+                    <input type="url" class="form-control" placeholder="https://zoom.us/j/...">
+                </div>
+
+                <div class="section-title h5 text-primary">Ticketing</div>
+                <div class="row g-3 mb-5">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Standard Ticket Price (€)</label>
+                        <input type="number" class="form-control" placeholder="50">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Total Capacity</label>
+                        <input type="number" class="form-control" placeholder="100">
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">Publish Event</button>
+                    <a href="index.html" class="btn btn-link text-muted">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const offlineRadio = document.getElementById('offline');
+        const onlineRadio = document.getElementById('online');
+        const hybridRadio = document.getElementById('hybrid');
+        const locationField = document.getElementById('locationField');
+        const linkField = document.getElementById('linkField');
+
+        function toggleFields() {
+            if (offlineRadio.checked) {
+                locationField.classList.remove('d-none');
+                linkField.classList.add('d-none');
+            } else if (onlineRadio.checked) {
+                locationField.classList.add('d-none');
+                linkField.classList.remove('d-none');
+            } else if (hybridRadio.checked) {
+                locationField.classList.remove('d-none');
+                linkField.classList.remove('d-none');
+            }
+        }
+
+        [offlineRadio, onlineRadio, hybridRadio].forEach(radio => {
+            radio.addEventListener('change', toggleFields);
+        });
+    </script>
+</body>
+</html>
