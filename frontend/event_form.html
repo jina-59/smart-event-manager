@@ -10,13 +10,14 @@
         body { background-color: #f8f9fa; }
         .form-container { max-width: 800px; margin: 50px auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .section-title { border-left: 5px solid #0d6efd; padding-left: 15px; margin-bottom: 25px; font-weight: bold; }
+        .error-banner { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">SmartEvent</a>
+            <a class="navbar-brand fw-bold" href="/">SmartEvent</a>
         </div>
     </nav>
 
@@ -24,26 +25,42 @@
         <div class="form-container">
             <h2 class="text-center fw-bold mb-5">Create New Event 🚀</h2>
             
-            <form id="eventForm">
+            {% if error_message %}
+            <div class="error-banner">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error_message }}
+            </div>
+            {% endif %}
+
+            <form id="eventForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
                 <div class="section-title h5 text-primary">Basic Information</div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Event Title</label>
-                    <input type="text" class="form-control" placeholder="e.g. Paris Data Science Meetup" required>
+                    <input type="text" name="title" value="{{ event.title|default:'' }}" class="form-control" placeholder="e.g. Paris Data Science Meetup" required>
                 </div>
+
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Category</label>
-                        <select class="form-select">
-                            <option>Technology</option>
-                            <option>Music</option>
-                            <option>Education</option>
-                            <option>Business</option>
+                        <select name="category" class="form-select" required>
+                            <option value="" disabled {% if not event.category %}selected{% endif %}>Select a Category</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if event.category.id == cat.id %}selected{% endif %}>
+                                    {{ cat.name }}
+                                </option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Event Date</label>
-                        <input type="date" class="form-control" required>
+                        <input type="date" name="date" value="{{ event.date|date:'Y-m-d' }}" class="form-control" required>
                     </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Event Image</label>
+                    <input type="file" name="image" class="form-control">
                 </div>
 
                 <div class="section-title h5 text-primary">Location & Type</div>
@@ -63,8 +80,9 @@
 
                 <div id="locationField" class="mb-4">
                     <label class="form-label fw-semibold">Physical Address</label>
-                    <input type="text" class="form-control" placeholder="Enter venue address in Paris">
+                    <input type="text" name="location" value="{{ event.location|default:'' }}" class="form-control" placeholder="Enter venue address in Paris">
                 </div>
+
                 <div id="linkField" class="mb-4 d-none">
                     <label class="form-label fw-semibold">Online Meeting Link</label>
                     <input type="url" class="form-control" placeholder="https://zoom.us/j/...">
@@ -74,17 +92,17 @@
                 <div class="row g-3 mb-5">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Standard Ticket Price (€)</label>
-                        <input type="number" class="form-control" placeholder="50">
+                        <input type="number" name="price" class="form-control" placeholder="50" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Total Capacity</label>
-                        <input type="number" class="form-control" placeholder="100">
+                        <input type="number" name="quota" class="form-control" placeholder="100" required>
                     </div>
                 </div>
 
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary btn-lg">Publish Event</button>
-                    <a href="index.html" class="btn btn-link text-muted">Cancel</a>
+                    <button type="submit" class="btn btn-primary btn-lg shadow">Publish Event</button>
+                    <a href="/" class="btn btn-link text-muted">Cancel</a>
                 </div>
             </form>
         </div>

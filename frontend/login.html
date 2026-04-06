@@ -36,14 +36,21 @@
                         <p class="text-muted">Enter your details to access your account</p>
                     </div>
 
-                    <form>
+                    {% if error %}
+                    <div class="alert alert-danger py-2 small mb-4">
+                        <i class="bi bi-exclamation-circle me-2"></i> {{ error }}
+                    </div>
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Email Address</label>
-                            <input type="email" class="form-control form-control-lg" placeholder="jina.hwang@isep.fr" required>
+                            <label class="form-label fw-semibold">Username or Email</label>
+                            <input type="text" name="username" class="form-control form-control-lg" placeholder="jina.hwang" required>
                         </div>
                         <div class="mb-4">
                             <label class="form-label fw-semibold">Password</label>
-                            <input type="password" class="form-control form-control-lg" placeholder="••••••••" required>
+                            <input type="password" name="password" class="form-control form-control-lg" placeholder="••••••••" required>
                         </div>
                         
                         <div class="d-flex justify-content-between mb-4">
@@ -62,7 +69,7 @@
                     </form>
                     
                     <div class="mt-5 text-center">
-                        <a href="index.html" class="text-muted text-decoration-none small">← Back to Home</a>
+                        <a href="/" class="text-muted text-decoration-none small">← Back to Home</a>
                     </div>
                 </div>
             </div>
