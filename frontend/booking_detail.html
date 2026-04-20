@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details | Event Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #27ae60;
+            --info-color: #2980b9;
+            --bg-color: #f4f7f6;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--text-dark);
+        }
+
+        .detail-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        /* Header Section */
+        .detail-header {
+            padding: 25px;
+            border-bottom: 1px dashed #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .booking-id {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .booking-id span { color: var(--text-dark); }
+
+        /* Status Badge */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-confirmed { background: #e8f5e9; color: var(--success-color); }
+        .status-completed { background: #e3f2fd; color: var(--info-color); }
+
+        /* Event Info Section */
+        .event-section {
+            padding: 25px;
+            display: flex;
+            gap: 20px;
+        }
+        .poster-img {
+            width: 100px;
+            height: 140px;
+            background: #eee;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .event-text h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.4rem;
+            line-height: 1.2;
+        }
+        .event-text p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+        .event-text i { width: 20px; color: var(--primary-color); }
+
+        /* Booking Info Grid */
+        .info-section {
+            padding: 0 25px 25px 25px;
+        }
+        .info-grid {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .info-item label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .info-item span {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Payment Summary */
+        .payment-footer {
+            padding: 25px;
+            background: #fdfdfd;
+            border-top: 1px solid #eee;
+        }
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .total-label { font-size: 1.1rem; font-weight: 600; }
+        .total-amount { font-size: 1.6rem; font-weight: 700; color: var(--primary-color); }
+
+        /* Action Button */
+        .btn-action {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+        }
+        /* Mode: Write Review */
+        .btn-review-write {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        /* Mode: View Review */
+        .btn-review-view {
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+        .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        @media (max-width: 480px) {
+            .event-section { flex-direction: column; }
+            .poster-img { width: 100%; height: 200px; }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="detail-container">
+    <div class="detail-header">
+        <div class="booking-id">BOOKING ID: <span>#BK-20260420-99</span></div>
+        <div id="statusBadge" class="badge status-confirmed">Confirmed</div>
+    </div>
+
+    <div class="event-section">
+        <img src="https://via.placeholder.com/100x140?text=Poster" alt="Event Poster" class="poster-img">
+        <div class="event-text">
+            <h2>2026 AI Conference: Future of Web</h2>
+            <p><i class="fas fa-calendar-alt"></i> Monday, April 20, 2026</p>
+            <p><i class="fas fa-map-marker-alt"></i> Paris Expo Porte de Versailles</p>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Paid On</label>
+                <span>Apr 10, 2026 14:30</span>
+            </div>
+            <div class="info-item">
+                <label>Ticket Type</label>
+                <span>VIP Pass</span>
+            </div>
+            <div class="info-item">
+                <label>Quantity</label>
+                <span>2 Tickets</span>
+            </div>
+            <div class="info-item">
+                <label>Payment Method</label>
+                <span>Credit Card (**** 1234)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-footer">
+        <div class="price-row">
+            <div class="total-label">Total Amount</div>
+            <div class="total-amount">$150.00</div>
+        </div>
+
+        <a href="#" id="reviewBtn" class="btn-action btn-review-write">
+            <i class="fas fa-pen-nib"></i> Write a Review
+        </a>
+    </div>
+</div>
+
+<script>
+    /* 
+       Demo Logic: 
+       In a real app, the server would check if a review exists.
+       Here we simulate the state change for design purposes.
+    */
+    const reviewBtn = document.getElementById('reviewBtn');
+    const statusBadge = document.getElementById('statusBadge');
+
+    // Simulate state: set true if user already wrote a review
+    let hasReviewed = false; 
+
+    function updateButtonUI() {
+        if (hasReviewed) {
+            reviewBtn.innerHTML = '<i class="fas fa-search"></i> View My Review';
+            reviewBtn.className = 'btn-action btn-review-view';
+            reviewBtn.onclick = () => alert("Redirecting to your review page...");
+        } else {
+            reviewBtn.innerHTML = '<i class="fas fa-pen-nib"></i> Write a Review';
+            reviewBtn.className = 'btn-action btn-review-write';
+            reviewBtn.onclick = () => {
+                alert("Redirecting to Review Form...");
+                // In actual code: window.location.href = 'review_form.html';
+            };
+        }
+    }
+
+    // Initialize UI
+    updateButtonUI();
+
+    /* 
+       Optional: Change badge color based on text 
+       Confirmed -> Green / Completed -> Blue
+    */
+    if (statusBadge.innerText === "Completed") {
+        statusBadge.className = "badge status-completed";
+    }
+</script>
+
+</body>
+</html>

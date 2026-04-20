@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reviews</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --danger-color: #e74c3c;
+            --star-color: #f1c40f;
+            --bg-color: #f8f9fa;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 { font-size: 1.8rem; margin: 0; }
+
+        /* Review Card Style */
+        .review-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .review-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .event-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .review-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .stars { color: var(--star-color); }
+        .date { color: var(--text-muted); }
+
+        .review-content {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        /* Action Buttons */
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .btn-edit { background-color: #e3f2fd; color: var(--primary-color); }
+        .btn-edit:hover { background-color: #bbdefb; }
+
+        .btn-delete { background-color: #ffebee; color: var(--danger-color); }
+        .btn-delete:hover { background-color: #ffcdd2; }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+            background: white;
+            border-radius: 12px;
+            display: none; /* Shown via JS if no reviews */
+        }
+        .empty-state i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        .empty-state p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>My Reviews</h1>
+        <button class="btn btn-edit" onclick="location.href='review_form.html'">+ New Review</button>
+    </header>
+
+    <div id="reviewList" class="review-list">
+        <div class="review-card" id="review-1">
+            <div class="event-name">Global Tech Summit 2026</div>
+            <div class="review-meta">
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                    <span>4.5</span>
+                </div>
+                <div class="date">Oct 25, 2026</div>
+            </div>
+            <p class="review-content">
+                The AI sessions were mind-blowing. I especially loved the networking opportunities during the coffee break. Well organized!
+            </p>
+            <div class="card-actions">
+                <button class="btn btn-edit" onclick="editReview(1)"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                <button class="btn btn-delete" onclick="deleteReview(1)"><i class="fa-regular fa-trash-can"></i> Delete</button>
+            </div>
+        </div>
+
+        <div class="review-card" id="review-2">
+            <div class="event-name">Web Dev Workshop</div>
+            <div class="review-meta">
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <span>4.0</span>
+                </div>
+                <div class="date">Sep 12, 2026</div>
+            </div>
+            <p class="review-content">
+                Great hands-on experience, but the room was a bit too cold. Looking forward to the next advanced session.
+            </p>
+            <div class="card-actions">
+                <button class="btn btn-edit" onclick="editReview(2)"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                <button class="btn btn-delete" onclick="deleteReview(2)"><i class="fa-regular fa-trash-can"></i> Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+        <i class="fa-solid fa-box-open"></i>
+        <p>No reviews submitted yet.</p>
+    </div>
+</div>
+
+<script>
+    // Function to handle review deletion
+    function deleteReview(id) {
+        if (confirm("Are you sure you want to delete this review?")) {
+            const card = document.getElementById(`review-${id}`);
+            card.remove();
+            checkEmptyState();
+        }
+    }
+
+    // Function to check if there are no reviews left
+    function checkEmptyState() {
+        const reviewList = document.getElementById('reviewList');
+        const emptyState = document.getElementById('emptyState');
+        
+        // If there are no children in the review list, show empty state
+        if (reviewList.children.length === 0) {
+            reviewList.style.display = 'none';
+            emptyState.style.display = 'block';
+        }
+    }
+
+    function editReview(id) {
+        alert("Redirecting to edit review #" + id);
+        // location.href = `edit_form.html?id=${id}`;
+    }
+
+    // Initial check on load
+    window.onload = checkEmptyState;
+</script>
+
+</body>
+</html>

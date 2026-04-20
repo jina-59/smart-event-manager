@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings | Event Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --danger-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --border-color: #dcdde1;
+            --text-main: #2c3e50;
+            --text-muted: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .settings-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin: 20px;
+        }
+
+        .settings-card h2 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: var(--text-main);
+            font-size: 1.6rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group input::placeholder {
+            color: #ccc;
+        }
+
+        /* Update Button */
+        .btn-update {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-update:hover {
+            background-color: #2980b9;
+        }
+
+        /* Divider */
+        .divider {
+            margin: 40px 0 20px;
+            border-top: 1px solid #eee;
+            position: relative;
+        }
+
+        /* Delete Account Section */
+        .danger-zone {
+            text-align: center;
+        }
+
+        .btn-delete-account {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .btn-delete-account:hover {
+            color: var(--danger-color);
+        }
+
+        /* Password Hint */
+        .password-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="settings-card">
+    <h2>Profile Settings</h2>
+
+    <form id="profileForm">
+        <div class="form-group">
+            <label for="userName">Full Name</label>
+            <input type="text" id="userName" name="name" placeholder="Enter your name" value="John Doe" required>
+        </div>
+
+        <div class="form-group">
+            <label for="userEmail">Email Address</label>
+            <input type="email" id="userEmail" name="email" placeholder="example@mail.com" value="john.doe@example.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" name="password" placeholder="Leave blank to keep current">
+            <p class="password-hint">Min. 8 characters with a mix of letters and numbers.</p>
+        </div>
+
+        <button type="submit" class="btn-update">Update Profile</button>
+    </form>
+
+    <div class="divider"></div>
+
+    <div class="danger-zone">
+        <button type="button" class="btn-delete-account" onclick="confirmDelete()">Delete Account</button>
+    </div>
+</div>
+
+<script>
+    // Handle Profile Update
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // In a real app, you'd send this data via fetch()
+        const name = document.getElementById('userName').value;
+        const email = document.getElementById('userEmail').value;
+        const password = document.getElementById('newPassword').value;
+
+        console.log("Saving changes:", { name, email, hasNewPassword: !!password });
+        alert("Your profile has been updated successfully!");
+    });
+
+    // Handle Account Deletion
+    function confirmDelete() {
+        const check = confirm("Warning: This will permanently delete your account and all associated booking history. Are you sure you want to proceed?");
+        if (check) {
+            const finalCheck = prompt("Please type 'DELETE' to confirm.");
+            if (finalCheck === "DELETE") {
+                alert("Account has been scheduled for deletion.");
+                // location.href = 'index.html';
+            } else {
+                alert("Confirmation failed. Account was not deleted.");
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

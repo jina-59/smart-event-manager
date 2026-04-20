@@ -1,0 +1,145 @@
+<style>
+    /* 1. 기본 배경 및 폰트 디테일 */
+    .section-title {
+        font-size: 1.3rem;
+        letter-spacing: -0.5px;
+        position: relative;
+        padding-left: 15px;
+    }
+    .section-title::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 20%; bottom: 20%;
+        width: 4px;
+        background: #0d6efd;
+        border-radius: 10px;
+    }
+
+    /* 2. 카드 메인 디자인 (Glassmorphism + Shadow) */
+    .modern-booking-item {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px); /* 배경 흐림 효과 */
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        padding: 12px;
+        margin-bottom: 20px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    /* 3. 포스터 컨테이너 & 애니메이션 */
+    .poster-wrapper {
+        width: 100px;
+        height: 100px;
+        flex-shrink: 0;
+        overflow: hidden;
+        border-radius: 16px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    .poster-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    /* 4. 마우스 호버 시 극적인 변화 */
+    .modern-booking-item:hover {
+        background: #ffffff;
+        transform: scale(1.02) translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        border-color: #0d6efd;
+    }
+    .modern-booking-item:hover .poster-wrapper img {
+        transform: scale(1.15);
+    }
+    .modern-booking-item:hover .arrow-icon {
+        transform: translateX(5px);
+        opacity: 1;
+    }
+
+    /* 5. 텍스트 및 상세 요소 */
+    .event-info-main { flex-grow: 1; }
+    .event-category {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #0d6efd;
+        margin-bottom: 4px;
+        display: block;
+    }
+    .event-name-text {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #1a1a1a;
+    }
+    .event-meta-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        display: flex;
+        gap: 12px;
+    }
+    .price-tag {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #212529;
+    }
+    .arrow-icon {
+        font-size: 1.5rem;
+        color: #0d6efd;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+</style>
+
+<div class="card border-0 bg-transparent">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h5 class="section-title fw-bold m-0 text-dark">Recent Bookings</h5>
+    </div>
+
+    <div class="modern-booking-item shadow-sm" onclick="location.href='booking_detail.html'">
+        <div class="poster-wrapper">
+            <img src="https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&w=300&q=80" alt="Poster">
+        </div>
+        <div class="event-info-main">
+            <span class="event-category">Annual Summit</span>
+            <div class="event-name-text">Global Tech Summit 2026</div>
+            <div class="event-meta-text">
+                <span><i class="bi bi-calendar-event me-1"></i> 20 Apr</span>
+                <span><i class="bi bi-geo-alt me-1"></i> Paris Expo</span>
+            </div>
+        </div>
+        <div class="text-end px-3">
+            <span class="price-tag">$150.00</span>
+            <div class="small text-success fw-bold mt-1">Confirmed</div>
+        </div>
+        <div class="arrow-icon px-2">
+            <i class="bi bi-chevron-right"></i>
+        </div>
+    </div>
+
+    <div class="modern-booking-item shadow-sm" onclick="location.href='booking_detail.html'">
+        <div class="poster-wrapper">
+            <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=300&q=80" alt="Poster">
+        </div>
+        <div class="event-info-main">
+            <span class="event-category">Interactive Workshop</span>
+            <div class="event-name-text">AI Ethics Deep Dive</div>
+            <div class="event-meta-text">
+                <span><i class="bi bi-calendar-event me-1"></i> 15 Mar</span>
+                <span><i class="bi bi-geo-alt me-1"></i> ISEP Campus</span>
+            </div>
+        </div>
+        <div class="text-end px-3">
+            <span class="price-tag">$45.00</span>
+            <div class="small text-secondary fw-bold mt-1">Completed</div>
+        </div>
+        <div class="arrow-icon px-2">
+            <i class="bi bi-chevron-right"></i>
+        </div>
+    </div>
+</div>
