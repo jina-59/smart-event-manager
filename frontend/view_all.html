@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Events | SmartEvent</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #27ae60;
+            --dark: #2c3e50;
+            --muted: #7f8c8d;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin: 30px 0 15px;
+            padding-left: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Event Card Style */
+        .event-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .event-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        .event-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+        }
+
+        .event-meta {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .event-meta i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+
+        /* Status Badge */
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-upcoming { background: #e3f2fd; color: var(--primary); }
+        .badge-past { background: #eee; color: var(--muted); }
+
+        /* Past Events Specific Style */
+        .past-section .event-card {
+            opacity: 0.8;
+            background: #fdfdfd;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background: #fff;
+            border-radius: 12px;
+            border: 2px dashed #ddd;
+            color: var(--muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>All Events 🚀</h1>
+
+    <!-- Upcoming Events Section -->
+    <h2>Upcoming Events</h2>
+    <div class="upcoming-section">
+        {% for event in upcoming_events %}
+        <a href="#" class="event-card">
+            <div class="event-info">
+                <h3>{{ event.title }}</h3>
+                <div class="event-meta">
+                    <span><i class="far fa-calendar-alt"></i> {{ event.date|date:"M d, Y" }}</span>
+                    <span style="margin-left: 15px;"><i class="fas fa-map-marker-alt"></i> {{ event.location|default:"TBA" }}</span>
+                </div>
+            </div>
+            <div class="badge badge-upcoming">Upcoming</div>
+        </a>
+        {% empty %}
+        <div class="empty-state">
+            <p>No upcoming events yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Past Events Section -->
+    <h2 style="color: var(--muted); border-left-color: #ddd;">Past Events</h2>
+    <div class="past-section">
+        {% for event in past_events %}
+        <a href="#" class="event-card">
+            <div class="event-info">
+                <h3 style="color: var(--muted);">{{ event.title }}</h3>
+                <div class="event-meta">
+                    <span><i class="far fa-calendar-alt"></i> {{ event.date|date:"M d, Y" }}</span>
+                </div>
+            </div>
+            <div class="badge badge-past">Closed</div>
+        </a>
+        {% empty %}
+        <p style="text-align: center; color: var(--muted);">No past events recorded.</p>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>
