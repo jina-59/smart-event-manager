@@ -97,6 +97,22 @@ def event_booking(request, pk):
     return render(request, 'booking.html', {'event': event, 'tickets': tickets})
 
 @login_required
+def booking_detail(request, booking_id):
+    booking = get_object_or_404(
+        Booking.objects.select_related(
+            'ticket_type',
+            'ticket_type__event',
+            'ticket_type__event__category'
+        ),
+        id=booking_id,
+        user=request.user
+    )
+
+    return render(request, 'booking_detail.html', {
+        'booking': booking
+    })
+
+@login_required
 def my_page(request):
     bookings = (
         Booking.objects
