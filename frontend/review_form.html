@@ -136,17 +136,18 @@
 
     <div class="event-details">
         <label>Event Title</label>
-        <span>Global Tech Summit 2026</span>
+        <span>{{ booking.ticket_type.event.title }}</span>
         <div style="margin-top: 10px;"></div>
         <label>Date</label>
-        <span>October 24, 2026</span>
+        <span>{{ booking.booked_at|date:"F d, Y" }}</span>
     </div>
 
-    <form id="reviewForm">
+    <form id="reviewForm" method="POST">
+        {% csrf_token %}
         <div class="rating-wrapper">
             <span class="rating-label">Rate your experience</span>
             <div class="stars">
-                <input type="radio" id="star5" name="rating" value="5"><label for="star5" class="fa-solid fa-star"></label>
+                <input type="radio" id="star5" name="rating" value="5" required><label for="star5" class="fa-solid fa-star"></label>
                 <input type="radio" id="star4" name="rating" value="4"><label for="star4" class="fa-solid fa-star"></label>
                 <input type="radio" id="star3" name="rating" value="3"><label for="star3" class="fa-solid fa-star"></label>
                 <input type="radio" id="star2" name="rating" value="2"><label for="star2" class="fa-solid fa-star"></label>
@@ -155,38 +156,15 @@
         </div>
 
         <div class="input-group">
-            <textarea name="comment" placeholder="Tell us about your experience..." required></textarea>
+            <textarea name="content" placeholder="Tell us about your experience..." required></textarea>
         </div>
 
         <div class="actions">
-            <button type="button" class="btn-cancel" onclick="window.history.back()">Cancel</button>
+            <button type="button" class="btn-cancel" onclick="location.href='{% url 'my_page' %}'">Cancel</button>
             <button type="submit" class="btn-submit">Submit Review</button>
         </div>
     </form>
 </div>
-
-<script>
-    document.getElementById('reviewForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const rating = document.querySelector('input[name="rating"]:checked')?.value;
-        const comment = this.comment.value;
-
-        if(!rating) {
-            alert('Please select a star rating.');
-            return;
-        }
-
-        // Logic for data handling
-        console.log("Submitting Review:", { 
-            score: rating, 
-            content: comment,
-            timestamp: new Date().toISOString()
-        });
-
-        alert('Thank you! Your review has been submitted.');
-    });
-</script>
 
 </body>
 </html>

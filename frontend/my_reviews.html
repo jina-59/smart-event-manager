@@ -128,53 +128,45 @@
 <div class="container">
     <header>
         <h1>My Reviews</h1>
-        <button class="btn btn-edit" onclick="location.href='review_form.html'">+ New Review</button>
+        <button class="btn btn-edit" onclick="location.href='{% url 'my_page' %}'">
+            <i class='fa-solid fa-plus'></i> New Review
+        </button>
     </header>
 
     <div id="reviewList" class="review-list">
-        <div class="review-card" id="review-1">
-            <div class="event-name">Global Tech Summit 2026</div>
+        {% for review in reviews %}
+        <div class="review-card" id="review-{{ review.id }}">
+            <div class="event-name">{{ review.booking.ticket_type.event.title }}</div>
             <div class="review-meta">
                 <div class="stars">
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star-half-stroke"></i>
-                    <span>4.5</span>
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            <i class="fa-solid fa-star"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span>{{ review.rating|floatformat:1 }}</span>
                 </div>
-                <div class="date">Oct 25, 2026</div>
+                <div class="date">{{ review.created_at|date:"M d, Y" }}</div>
             </div>
             <p class="review-content">
-                The AI sessions were mind-blowing. I especially loved the networking opportunities during the coffee break. Well organized!
+                {{ review.content }}
             </p>
             <div class="card-actions">
-                <button class="btn btn-edit" onclick="editReview(1)"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
-                <button class="btn btn-delete" onclick="deleteReview(1)"><i class="fa-regular fa-trash-can"></i> Delete</button>
+                <button class="btn btn-edit" onclick="editReview({{ review.id }})"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                <button class="btn btn-delete" onclick="deleteReview({{ review.id }})"><i class="fa-regular fa-trash-can"></i> Delete</button>
             </div>
         </div>
-
-        <div class="review-card" id="review-2">
-            <div class="event-name">Web Dev Workshop</div>
-            <div class="review-meta">
-                <div class="stars">
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-regular fa-star"></i>
-                    <span>4.0</span>
-                </div>
-                <div class="date">Sep 12, 2026</div>
-            </div>
-            <p class="review-content">
-                Great hands-on experience, but the room was a bit too cold. Looking forward to the next advanced session.
-            </p>
-            <div class="card-actions">
-                <button class="btn btn-edit" onclick="editReview(2)"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
-                <button class="btn btn-delete" onclick="deleteReview(2)"><i class="fa-regular fa-trash-can"></i> Delete</button>
-            </div>
+        {% empty %}
+        <div class="empty-state" style="display: block;">
+            <i class="fa-solid fa-box-open"></i>
+            <p>No reviews submitted yet.</p>
         </div>
+        {% endfor %}
+    </div>
+</div>
+        
     </div>
 
     <div id="emptyState" class="empty-state">

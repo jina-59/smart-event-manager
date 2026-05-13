@@ -76,8 +76,8 @@ WSGI_APPLICATION = 'event_hub_main.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'event_db',           # pgAdmin에서 새로 만들 상자 이름
-        'USER': 'postgres',           # 기본 사용자 이름
+        'NAME': 'event_db',  
+        'USER': 'postgres',        
         'PASSWORD': 'co0420men', 
         'HOST': 'localhost',
         'PORT': '5432',

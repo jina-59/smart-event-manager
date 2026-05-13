@@ -132,15 +132,16 @@
 <div class="settings-card">
     <h2>Profile Settings</h2>
 
-    <form id="profileForm">
+    <form id="profileForm" method="POST">
+        {% csrf_token %}
         <div class="form-group">
             <label for="userName">Full Name</label>
-            <input type="text" id="userName" name="name" placeholder="Enter your name" value="John Doe" required>
+            <input type="text" id="userName" name="name" placeholder="Enter your name" value="{{ user.username }}" required>
         </div>
 
         <div class="form-group">
             <label for="userEmail">Email Address</label>
-            <input type="email" id="userEmail" name="email" placeholder="example@mail.com" value="john.doe@example.com" required>
+            <input type="email" id="userEmail" name="email" placeholder="example@email.com" value="{{ user.email }}" required>
         </div>
 
         <div class="form-group">
@@ -155,34 +156,23 @@
     <div class="divider"></div>
 
     <div class="danger-zone">
+        <form id="deleteForm" action="{% url 'delete_account' %}" method="POST" style="display:none;">
+            {% csrf_token %}
+        </form>
         <button type="button" class="btn-delete-account" onclick="confirmDelete()">Delete Account</button>
     </div>
 </div>
 
 <script>
-    // Handle Profile Update
-    document.getElementById('profileForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // In a real app, you'd send this data via fetch()
-        const name = document.getElementById('userName').value;
-        const email = document.getElementById('userEmail').value;
-        const password = document.getElementById('newPassword').value;
-
-        console.log("Saving changes:", { name, email, hasNewPassword: !!password });
-        alert("Your profile has been updated successfully!");
-    });
-
-    // Handle Account Deletion
     function confirmDelete() {
         const check = confirm("Warning: This will permanently delete your account and all associated booking history. Are you sure you want to proceed?");
         if (check) {
             const finalCheck = prompt("Please type 'DELETE' to confirm.");
             if (finalCheck === "DELETE") {
-                alert("Account has been scheduled for deletion.");
+                document.getElementById('deleteForm').submit();
                 // location.href = 'index.html';
             } else {
-                alert("Confirmation failed. Account was not deleted.");
+                alert("Confirmation failed. You must type 'DELETE' in uppercase.");
             }
         }
     }

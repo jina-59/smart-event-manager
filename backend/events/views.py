@@ -5,6 +5,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from .models import Event, Category, TicketType, Booking
+from django.contrib.auth.forms import UserCreationForm
+from .models import Review
+from django.contrib import messages
+from django.views.decorators.http import require_POST
+from django.utils import timezone
 
 def home(request):
     events = Event.objects.all()
@@ -93,18 +98,28 @@ def event_booking(request, pk):
 
 @login_required
 def my_page(request):
-    # 사용자가 예약한 모든 내역을 가져옴
-    bookings = Booking.objects.filter(user=request.user).order_by('-booked_at')
-    
-    # 📍 [수정] 통계 수치 실시간 계산 로직 추가
-    # 1. 모든 예약의 총 가격 합산 (모델에 정의한 total_price 속성 사용)
+    bookings = (
+        Booking.objects
+        .filter(user=request.user)
+        .select_related(
+            'ticket_type',
+            'ticket_type__event',
+            'ticket_type__event__category'
+        )
+        .order_by('-booked_at')
+    )
+
+    recent_bookings = bookings[:3]
+
+    reviews = Review.objects.filter(booking__user=request.user)
+
     total_spent = sum(booking.total_price for booking in bookings)
-    
-    # 2. 예약 건수 자체가 다가올 예약(Upcoming) 수라면 동일하게 적용
     upcoming_count = bookings.count()
 
     return render(request, 'my_page.html', {
         'bookings': bookings,
+        'recent_bookings': recent_bookings,
+        'reviews': reviews,
         'total_spent': total_spent,
         'upcoming_count': upcoming_count
     })
@@ -135,3 +150,71 @@ def event_delete(request, pk):
         event.delete()
         return redirect('home')
     return render(request, 'event_confirm_delete.html', {'event': event})
+
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'signup.html', {'form': form})
+
+
+@login_required
+def create_review(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+
+    existing_review = Review.objects.filter(booking=booking).first()
+    
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        content = request.POST.get('content')
+
+        if existing_review:
+            existing_review.rating = rating
+            existing_review.content = content
+            existing_review.save()
+        else:
+            Review.objects.create(
+                booking=booking,
+                rating=rating,
+                content=content
+            )
+        return redirect('my_reviews')
+        
+    return render(request, 'review_form.html', {'booking': booking, 'existing_review': existing_review})
+
+
+@login_required
+def my_reviews(request):
+    reviews = Review.objects.filter(booking__user=request.user).order_by('-created_at')
+    return render(request, 'my_reviews.html', {'reviews': reviews})
+
+@login_required
+def profile_settings(request):
+    if request.method == 'POST':
+        user = request.user
+        user.email = request.POST.get('email')
+        user.save()
+        return redirect('my_page')
+        
+    return render(request, 'profile.html')
+
+@login_required
+@require_POST
+def delete_account(request):
+    user = request.user
+
+    if user.username == 'admin' or user.is_superuser:
+        messages.error(request, "Admin accounts cannot be deleted for security reasons.")
+        return redirect('profile_settings')
+
+    user.delete()
+    logout(request)
+    messages.success(request, "Your account has been successfully deleted.")
+    return redirect('home')
