@@ -65,3 +65,29 @@
 - Price (€): 각 티켓의 개별 가격
 - Quantity: 해당 티켓의 할당 수량
 - Delete : 잘못 만든 줄을 삭제하는 버튼
+
+
+
+5/13
+
+point?
+Review 개수 연동 안됨 (5개 이벤트 참석했는데 3개만 리뷰 남긴 경우)
+
+
+새로 만들 페이지 : my ticket - 전체내가 예약한 내역 랑 과거 페스트
+My review 에 위에 대시바 ?가 사라짐
+
+
+My page에서 자신에 대한 정보에 대한 설정 필요
+
+데이터베이스에서 비밀번호 중복됨 이거 세팅 다시할걸 !
+
+Main page - Learn more(삭제)
+Featured Event(Top event로 변경 ?) booking 제일 많은 세개만 나두고 view all 눌렀을때 전체가 이벤트가 보이기
+
+View_All : 예매할 이벤트가 달별로 나오게
+
+대시바에 지금은 눌러도 이동하는게 없음 - 카톡 확인
+
+my admin
+작은 팝업창 ? 대시보드 나오게
