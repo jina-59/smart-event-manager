@@ -103,14 +103,30 @@
                         <div class="card stat-card shadow-sm p-3 bg-white">
                             <div class="text-muted small fw-bold">TOTAL EVENTS</div>
                             <div class="h3 fw-bold">{{ bookings.count }}</div>
-                            <div class="text-success small"><i class="bi bi-arrow-up"></i> 2 more this month</div>
+                            {% if remaining_this_month_count %}
+                                <div class="text-success small">
+                                    <i class="bi bi-arrow-up"></i> {{ remaining_this_month_count }} remaining this month
+                                </div>
+                            {% else %}
+                                <div class="text-muted small">
+                                    No events left this month
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card stat-card shadow-sm p-3 bg-white text-primary">
                             <div class="text-muted small fw-bold">UPCOMING</div>
-                            <div class="h3 fw-bold">{{ upcoming_count }}</div>
-                            <div class="text-muted small">Next: March 30</div>
+                            {% if next_upcoming_booking %}
+                                <div class="h3 fw-bold">{{ upcoming_count }}</div>
+                                <div class="text-muted small">
+                                    Next: {{ next_upcoming_booking.ticket_type.event.title }}
+                                    · {{ next_upcoming_booking.ticket_type.event.date|date:"M d" }}
+                                </div>
+                            {% else %}
+                                <div class="h3 fw-bold">0</div>
+                                <div class="text-muted small">No upcoming events</div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -141,7 +157,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4 text-end mt-3 mt-md-0">
-                                <div class="small fw-bold text-muted mb-1">{{ booking.booked_at|date:"M d, Y" }}</div>
+                                <div class="small fw-bold text-muted mb-1">{{ booking.ticket_type.event.date|date:"M d, Y" }}</div>
                                 <span class="badge bg-success-subtle text-success mb-2">Confirmed</span>
                                 <div class="mt-2">
                                     {% if booking.review %}

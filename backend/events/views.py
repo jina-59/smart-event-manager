@@ -130,14 +130,42 @@ def my_page(request):
     reviews = Review.objects.filter(booking__user=request.user)
 
     total_spent = sum(booking.total_price for booking in bookings)
-    upcoming_count = bookings.count()
+    today = timezone.localdate()
+
+    upcoming_bookings = (
+        bookings
+        .filter(ticket_type__event__date__gte=today)
+        .order_by('ticket_type__event__date')
+    )
+
+    next_upcoming_booking = upcoming_bookings.first()
+
+    upcoming_count = (
+        upcoming_bookings
+        .values('ticket_type__event_id')
+        .distinct()
+        .count()
+    )
+
+    remaining_this_month_count = (
+        upcoming_bookings
+        .filter(
+            ticket_type__event__date__year=today.year,
+            ticket_type__event__date__month=today.month
+        )
+        .values('ticket_type__event_id')
+        .distinct()
+        .count()
+    )
 
     return render(request, 'my_page.html', {
         'bookings': bookings,
         'recent_bookings': recent_bookings,
         'reviews': reviews,
         'total_spent': total_spent,
-        'upcoming_count': upcoming_count
+        'upcoming_count': upcoming_count,
+        'next_upcoming_booking': next_upcoming_booking,
+        'remaining_this_month_count': remaining_this_month_count,
     })
 
 @login_required
