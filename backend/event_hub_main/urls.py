@@ -26,4 +26,7 @@ urlpatterns = [
 
     # Delete Account
     path('delete-account/', views.delete_account, name='delete_account'),
+    path('review/<int:review_id>/delete/', views.delete_review, name='delete_review'),
+
+    path('booking/<int:booking_id>/cancel/', views.cancel_booking, name='cancel_booking'),
 ]

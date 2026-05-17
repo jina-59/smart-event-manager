@@ -161,16 +161,16 @@
 
 <div class="detail-container">
     <div class="detail-header">
-        <div class="booking-id">BOOKING ID: <span>#BK-20260420-99</span></div>
+        <div class="booking-id">BOOKING ID: <span>#BK-{{ booking.id }}</span></div>
         <div id="statusBadge" class="badge status-confirmed">Confirmed</div>
     </div>
 
     <div class="event-section">
         <img src="https://via.placeholder.com/100x140?text=Poster" alt="Event Poster" class="poster-img">
         <div class="event-text">
-            <h2>2026 AI Conference: Future of Web</h2>
-            <p><i class="fas fa-calendar-alt"></i> Monday, April 20, 2026</p>
-            <p><i class="fas fa-map-marker-alt"></i> Paris Expo Porte de Versailles</p>
+            <h2>{{ booking.ticket_type.event.title }}</h2>
+            <p><i class="fas fa-calendar-alt"></i>{{ booking.ticket_type.event.date|date:"l, F d, Y" }}</p>
+            <p><i class="fas fa-map-marker-alt"></i> {{ booking.ticket_type.event.location }}</p>
         </div>
     </div>
 
@@ -178,15 +178,15 @@
         <div class="info-grid">
             <div class="info-item">
                 <label>Paid On</label>
-                <span>Apr 10, 2026 14:30</span>
+                <span>{{ booking.booked_at|date:"M d, Y H:i" }}</span>
             </div>
             <div class="info-item">
                 <label>Ticket Type</label>
-                <span>VIP Pass</span>
+                <span>{{ booking.ticket_type.ticket_name }}</span>
             </div>
             <div class="info-item">
                 <label>Quantity</label>
-                <span>2 Tickets</span>
+                <span>{{ booking.quantity }} Tickets</span>
             </div>
             <div class="info-item">
                 <label>Payment Method</label>
@@ -198,50 +198,39 @@
     <div class="payment-footer">
         <div class="price-row">
             <div class="total-label">Total Amount</div>
-            <div class="total-amount">$150.00</div>
+            <div class="total-amount">€{{ booking.total_price }}</div>
         </div>
 
-        <a href="#" id="reviewBtn" class="btn-action btn-review-write">
-            <i class="fas fa-pen-nib"></i> Write a Review
-        </a>
+        {% if booking.review %}
+            <a href="{% url 'my_reviews' %}" class="btn-action btn-review-view">
+                <i class="fas fa-search"></i> View My Review
+            </a>
+        {% elif booking.ticket_type.event.date <= today %}
+            <a href="{% url 'create_review' booking.id %}" class="btn-action btn-review-write">
+                <i class="fas fa-pen-nib"></i> Write a Review
+            </a>
+        {% else %}
+            <button class="btn-action btn-secondary" disabled style="background-color: #bdc3c7; color: #ffffff; cursor: not-allowed;">
+                <i class="fas fa-lock"></i> Review Locked (Event Pending)
+            </button>
+        {% endif %}
+
+        {% if booking.ticket_type.event.date|date:"Y-m-d" > today|date:"Y-m-d" %}
+            <div style="margin-top: 15px;">
+                <form action="{% url 'cancel_booking' booking.id %}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-action" style="background-color: #e74c3c; color: #ffffff; border: none;">
+                        <i class="fas fa-trash-alt" style="margin-right: 8px;"></i>Cancel Booking
+                    </button>
+                </form>
+            </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
-    /* 
-       Demo Logic: 
-       In a real app, the server would check if a review exists.
-       Here we simulate the state change for design purposes.
-    */
-    const reviewBtn = document.getElementById('reviewBtn');
     const statusBadge = document.getElementById('statusBadge');
-
-    // Simulate state: set true if user already wrote a review
-    let hasReviewed = false; 
-
-    function updateButtonUI() {
-        if (hasReviewed) {
-            reviewBtn.innerHTML = '<i class="fas fa-search"></i> View My Review';
-            reviewBtn.className = 'btn-action btn-review-view';
-            reviewBtn.onclick = () => alert("Redirecting to your review page...");
-        } else {
-            reviewBtn.innerHTML = '<i class="fas fa-pen-nib"></i> Write a Review';
-            reviewBtn.className = 'btn-action btn-review-write';
-            reviewBtn.onclick = () => {
-                alert("Redirecting to Review Form...");
-                // In actual code: window.location.href = 'review_form.html';
-            };
-        }
-    }
-
-    // Initialize UI
-    updateButtonUI();
-
-    /* 
-       Optional: Change badge color based on text 
-       Confirmed -> Green / Completed -> Blue
-    */
-    if (statusBadge.innerText === "Completed") {
+    if (statusBadge && statusBadge.innerText.trim() === "Completed") {
         statusBadge.className = "badge status-completed";
     }
 </script>

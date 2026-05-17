@@ -147,16 +147,25 @@
         <div class="rating-wrapper">
             <span class="rating-label">Rate your experience</span>
             <div class="stars">
-                <input type="radio" id="star5" name="rating" value="5" required><label for="star5" class="fa-solid fa-star"></label>
-                <input type="radio" id="star4" name="rating" value="4"><label for="star4" class="fa-solid fa-star"></label>
-                <input type="radio" id="star3" name="rating" value="3"><label for="star3" class="fa-solid fa-star"></label>
-                <input type="radio" id="star2" name="rating" value="2"><label for="star2" class="fa-solid fa-star"></label>
-                <input type="radio" id="star1" name="rating" value="1"><label for="star1" class="fa-solid fa-star"></label>
+                <input type="radio" id="star5" name="rating" value="5" {% if existing_review.rating == 5 %}checked{% endif %} required>
+                <label for="star5" class="fa-solid fa-star"></label>
+                
+                <input type="radio" id="star4" name="rating" value="4" {% if existing_review.rating == 4 %}checked{% endif %}>
+                <label for="star4" class="fa-solid fa-star"></label>
+                
+                <input type="radio" id="star3" name="rating" value="3" {% if existing_review.rating == 4 %}checked{% endif %}>
+                <label for="star3" class="fa-solid fa-star"></label>
+                
+                <input type="radio" id="star2" name="rating" value="2" {% if existing_review.rating == 4 %}checked{% endif %}>
+                <label for="star2" class="fa-solid fa-star"></label>
+                
+                <input type="radio" id="star1" name="rating" value="1" {% if existing_review.rating == 4 %}checked{% endif %}>
+                <label for="star1" class="fa-solid fa-star"></label>
             </div>
         </div>
 
         <div class="input-group">
-            <textarea name="content" placeholder="Tell us about your experience..." required></textarea>
+            <textarea name="content" placeholder="Tell us about your experience..." required>{% if existing_review %}{{ existing_review.content }}{% endif %}</textarea>
         </div>
 
         <div class="actions">

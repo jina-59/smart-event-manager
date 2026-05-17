@@ -4,9 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.db import transaction
 from django.core.exceptions import ValidationError
-from .models import Event, Category, TicketType, Booking
+from .models import Event, Category, TicketType, Booking, Review
 from django.contrib.auth.forms import UserCreationForm
-from .models import Review
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.utils import timezone
@@ -108,8 +107,11 @@ def booking_detail(request, booking_id):
         user=request.user
     )
 
+    today = timezone.localdate()
+
     return render(request, 'booking_detail.html', {
-        'booking': booking
+        'booking': booking,
+        'today': today,
     })
 
 @login_required
@@ -129,6 +131,7 @@ def my_page(request):
 
     reviews = Review.objects.filter(booking__user=request.user)
 
+    reviews_left_count = bookings.count() - reviews.count()
     total_spent = sum(booking.total_price for booking in bookings)
     today = timezone.localdate()
 
@@ -158,14 +161,20 @@ def my_page(request):
         .count()
     )
 
+    reviews_count = reviews.count()
+    reviews_left_count = bookings.count() - reviews_count
+
     return render(request, 'my_page.html', {
         'bookings': bookings,
         'recent_bookings': recent_bookings,
         'reviews': reviews,
+        'reviews_count': reviews_count,
+        'reviews_left_count': reviews_left_count,
         'total_spent': total_spent,
         'upcoming_count': upcoming_count,
         'next_upcoming_booking': next_upcoming_booking,
         'remaining_this_month_count': remaining_this_month_count,
+        'today': today,
     })
 
 @login_required
@@ -222,6 +231,7 @@ def create_review(request, booking_id):
         if existing_review:
             existing_review.rating = rating
             existing_review.content = content
+            existing_review.created_at = timezone.now()
             existing_review.save()
         else:
             Review.objects.create(
@@ -241,13 +251,30 @@ def my_reviews(request):
 
 @login_required
 def profile_settings(request):
+    user = request.user
+
     if request.method == 'POST':
-        user = request.user
-        user.email = request.POST.get('email')
+        email_input = request.POST.get('email')
+        name_input = request.POST.get('name')
+        password_input = request.POST.get('password')
+
+        if email_input:
+            user.email = email_input
+        if name_input:
+            user.username = name_input
+        
+        if password_input and password_input.strip():
+            user.set_password(password_input)
+
         user.save()
+
+        from django.contrib.auth import update_session_auth_hash
+        update_session_auth_hash(request, user)
+
+        messages.success(request, "Profile updated successfully!")
         return redirect('my_page')
         
-    return render(request, 'profile.html')
+    return render(request, 'profile.html', {'user': user})
 
 @login_required
 @require_POST
@@ -262,3 +289,32 @@ def delete_account(request):
     logout(request)
     messages.success(request, "Your account has been successfully deleted.")
     return redirect('home')
+
+@login_required
+@require_POST
+def delete_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id, booking__user=request.user)
+    review.delete()
+    return redirect('my_reviews')
+
+
+@login_required
+def cancel_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    
+    if booking.ticket_type.event.date <= timezone.now():
+        messages.error(request, "You cannot cancel an event that has already started or passed.")
+        return redirect('booking_detail', booking_id=booking.id)
+
+    if request.method == 'POST':
+        ticket_type = booking.ticket_type
+        
+        ticket_type.quota += booking.quantity
+        ticket_type.save()
+        
+        booking.delete()
+        
+        messages.success(request, "Your booking has been successfully canceled.")
+        return redirect('my_page')
+        
+    return redirect('booking_detail', booking_id=booking.id)

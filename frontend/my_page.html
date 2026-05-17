@@ -75,7 +75,8 @@
                      class="rounded-circle shadow-sm" width="100" height="100">
                 <div>
                     <h2 class="fw-bold mb-1">{{ user.username }}</h2>
-                    <p class="text-muted mb-0"><i class="bi bi-mortarboard me-2"></i>Data Science Student @ ISEP Paris</p>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-envelope-open me-2"></i>{{ user.email|default:"No email registered" }}</p>
                     <span class="badge bg-primary-subtle text-primary mt-2">Active Member</span>
                 </div>
             </div>
@@ -131,9 +132,9 @@
                     </div>
                     <div class="col-md-4">
                         <div class="card stat-card shadow-sm p-3 bg-white text-warning">
-                            <div class="text-muted small fw-bold">REVIEWS LEFT</div>
+                            <div class="text-muted small fw-bold">WRITTEN REVIEWS</div>
                             <div class="h3 fw-bold">{{ reviews.count }}</div>
-                            <div class="text-muted small">Earned 80 points</div>
+                            <div class="text-muted small">{{ reviews_left_count }} reviews left</div>
                         </div>
                     </div>
                 </div>
@@ -164,10 +165,14 @@
                                         <a href="{% url 'my_reviews' %}" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation();">
                                             <i class="bi bi-eye me-1"></i>View My Review
                                         </a>
-                                    {% else %}
+                                    {% elif booking.ticket_type.event.date|date:"Y-m-d" <= today|date:"Y-m-d" %}
                                         <a href="{% url 'create_review' booking.id %}" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation();">
                                             <i class="bi bi-pencil-square me-1"></i>Write Review
                                         </a>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary small py-2">
+                                            <i class="bi bi-lock-fill me-1"></i>Review available after event
+                                        </span>
                                     {% endif %}
                                 </div>
                             </div>
