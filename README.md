@@ -118,3 +118,5 @@ create event에서 업로드된 이미지가 ticket 사는 창에서도 뜨게 �
 링크/admin
 
 explore event 버튼에 검색창 만들기
+
+git pull<< 깃허브 최신 없데이트 !
