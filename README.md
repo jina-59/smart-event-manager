@@ -112,3 +112,9 @@ create event에서 업로드된 이미지가 ticket 사는 창에서도 뜨게 �
 
 
 ++발표 준비는 알고리즘 끝나고..? user랑 admin이랑 화면 잘 이어지게 피피티 짜야함.
+
+
+
+링크/admin
+
+explore event 버튼에 검색창 만들기
