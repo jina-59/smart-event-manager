@@ -1,0 +1,265 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Event | Smart Event Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --primary-color: #0d6efd; }
+        body { background-color: #f8f9fa; }
+        .booking-card { border-radius: 15px; border: none; }
+        .step-badge {
+            width: 30px; height: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">SmartEvent</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'view_all' %}">Explore Events</a></li>
+                    <li class="nav-item"><a class="nav-link text-info" href="{% url 'event_create' %}">Create Event</a></li>
+                </ul>
+                <div class="d-flex gap-2">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'my_page' %}" class="text-white me-3 align-self-center small text-decoration-none fw-bold">
+                            <i class="bi bi-person-circle me-1"></i> Hello, {{ user.username }}
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
+                        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <h2 class="fw-bold mb-1">Complete Your Booking</h2>
+                <p class="text-muted mb-4">Event: <strong class="text-primary">{{ event.title }}</strong></p>
+                
+                <div class="card shadow-sm booking-card p-4 mb-4">
+                    <h5 class="mb-4"><span class="step-badge">1</span>Select Tickets</h5>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket Type</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ticket in tickets %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold">{{ ticket.ticket_name }}</div>
+                                            <small class="text-muted">Available: {{ ticket.quota }} seats</small>
+                                        </td>
+                                        <td>€{{ ticket.price }}</td>
+                                        <td style="width: 120px;">
+                                            <input type="number" name="qty_{{ ticket.id }}" class="form-control qty-input" 
+                                                   value="0" min="0" max="{{ ticket.quota }}">
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center py-4 text-muted">No tickets available for this event.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4 d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                Confirm Reservation
+                            </button>
+                        </div>{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Event | Smart Event Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --primary-color: #0d6efd; }
+        body { background-color: #f8f9fa; }
+        .booking-card { border-radius: 15px; border: none; }
+        .step-badge {
+            width: 30px; height: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">SmartEvent</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'view_all' %}">Explore Events</a></li>
+                    <li class="nav-item"><a class="nav-link text-info" href="{% url 'event_create' %}">Create Event</a></li>
+                </ul>
+                <div class="d-flex gap-2">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'my_page' %}" class="text-white me-3 align-self-center small text-decoration-none fw-bold">
+                            <i class="bi bi-person-circle me-1"></i> Hello, {{ user.username }}
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
+                        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <h2 class="fw-bold mb-1">Complete Your Booking</h2>
+                <p class="text-muted mb-4">Event: <strong class="text-primary">{{ event.title }}</strong></p>
+                
+                <div class="card shadow-sm booking-card p-4 mb-4">
+                    <h5 class="mb-4"><span class="step-badge">1</span>Select Tickets</h5>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket Type</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ticket in tickets %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold">{{ ticket.ticket_name }}</div>
+                                            <small class="text-muted">Available: {{ ticket.quota }} seats</small>
+                                        </td>
+                                        <td>€{{ ticket.price }}</td>
+                                        <td style="width: 120px;">
+                                            <input type="number" name="qty_{{ ticket.id }}" class="form-control qty-input" 
+                                                   value="0" min="0" max="{{ ticket.quota }}">
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center py-4 text-muted">No tickets available for this event.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4 d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                Confirm Reservation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 p-4 sticky-top" style="top: 100px;">
+                    <h5 class="fw-bold mb-3">Order Summary</h5>
+                    <hr>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Event Date</small>
+                        <span class="fw-bold">{{ event.date|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Venue</small>
+                        <span class="fw-bold">{{ event.location }}</span>
+                    </div>
+                    <hr>
+                    {% if error %}
+                    <div class="alert alert-danger small py-2">{{ error }}</div>
+                    {% endif %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Status</span>
+                        <span class="badge bg-info-subtle text-info">In Progress</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 p-4 sticky-top" style="top: 100px;">
+                    <h5 class="fw-bold mb-3">Order Summary</h5>
+                    <hr>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Event Date</small>
+                        <span class="fw-bold">{{ event.date|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Venue</small>
+                        <span class="fw-bold">{{ event.location }}</span>
+                    </div>
+                    <hr>
+                    {% if error %}
+                    <div class="alert alert-danger small py-2">{{ error }}</div>
+                    {% endif %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Status</span>
+                        <span class="badge bg-info-subtle text-info">In Progress</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
