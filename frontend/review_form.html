@@ -111,7 +111,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'view_all' %}">Explore Events</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Explore Events</a></li>
                     <li class="nav-item"><a class="nav-link text-info" href="{% url 'event_create' %}">Create Event</a></li>
                 </ul>
                 <div class="d-flex gap-2">
@@ -137,8 +137,8 @@
                 <label>Event Title</label>
                 <span>{{ booking.ticket_type.event.title }}</span>
                 <div class="mt-3"></div>
-                <label>Date of Booking</label>
-                <span>{{ booking.booked_at|date:"F d, Y" }}</span>
+                <label>Event Date</label>
+                <span>{{ booking.ticket_type.event.date|date:"F d, Y" }}</span>
             </div>
 
             <form id="reviewForm" method="POST">

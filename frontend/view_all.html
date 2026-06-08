@@ -1,9 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Events | SmartEvent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -19,13 +22,14 @@
             font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             color: var(--dark);
         }
 
-        .container {
+        .main-container {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
         h1 {
@@ -41,15 +45,13 @@
             border-left: 4px solid var(--primary);
         }
 
-        /* Event Card Style */
         .event-card {
             background: var(--white);
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px 20px;
             margin-bottom: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             display: flex;
-            justify-content: space-between;
             align-items: center;
             transition: transform 0.2s;
             text-decoration: none;
@@ -61,9 +63,17 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.1);
         }
 
+        .event-details-wrapper {
+            flex-grow: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .event-info h3 {
             margin: 0 0 5px 0;
             font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .event-meta {
@@ -76,7 +86,6 @@
             color: var(--primary);
         }
 
-        /* Status Badge */
         .badge {
             padding: 5px 12px;
             border-radius: 20px;
@@ -88,7 +97,6 @@
         .badge-upcoming { background: #e3f2fd; color: var(--primary); }
         .badge-past { background: #eee; color: var(--muted); }
 
-        /* Past Events Specific Style */
         .past-section .event-card {
             opacity: 0.8;
             background: #fdfdfd;
@@ -106,48 +114,106 @@
 </head>
 <body>
 
-<div class="container">
-    <h1>All Events 🚀</h1>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">SmartEvent</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'my_page' %}" class="navbar-toggler" aria-label="Go to My Page">
+                    <span class="navbar-toggler-icon"></span>
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="navbar-toggler" aria-label="Go to Login">
+                    <span class="navbar-toggler-icon"></span>
+                </a>
+            {% endif %}
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'search' %}">Explore Events</a></li>
+                    <li class="nav-item"><a class="nav-link text-info" href="{% url 'event_create' %}">Create Event</a></li>
+                </ul>
 
-    <!-- Upcoming Events Section -->
-    <h2>Upcoming Events</h2>
-    <div class="upcoming-section">
-        {% for event in upcoming_events %}
-        <a href="#" class="event-card">
-            <div class="event-info">
-                <h3>{{ event.title }}</h3>
-                <div class="event-meta">
-                    <span><i class="far fa-calendar-alt"></i> {{ event.date|date:"M d, Y" }}</span>
-                    <span style="margin-left: 15px;"><i class="fas fa-map-marker-alt"></i> {{ event.location|default:"TBA" }}</span>
+                <form class="d-flex me-3" action="{% url 'search' %}" method="GET">
+                    <input class="form-control form-control-sm me-2" type="search" name="q" placeholder="Search events...">
+                    <button class="btn btn-outline-light btn-sm" type="submit"><i class="bi bi-search"></i></button>
+                </form>
+
+                <div class="d-flex gap-2">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'my_page' %}" class="text-white me-3 align-self-center small text-decoration-none fw-bold">
+                            <i class="bi bi-person-circle me-1"></i> Hello, {{ user.username }}
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
+                        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Sign Up</a>
+                    {% endif %}
                 </div>
             </div>
-            <div class="badge badge-upcoming">Upcoming</div>
-        </a>
-        {% empty %}
-        <div class="empty-state">
-            <p>No upcoming events yet.</p>
         </div>
-        {% endfor %}
-    </div>
+    </nav>
 
-    <!-- Past Events Section -->
-    <h2 style="color: var(--muted); border-left-color: #ddd;">Past Events</h2>
-    <div class="past-section">
-        {% for event in past_events %}
-        <a href="#" class="event-card">
-            <div class="event-info">
-                <h3 style="color: var(--muted);">{{ event.title }}</h3>
-                <div class="event-meta">
-                    <span><i class="far fa-calendar-alt"></i> {{ event.date|date:"M d, Y" }}</span>
+    <div class="main-container">
+        <h1>All Events 🚀</h1>
+
+        <h2>Upcoming Events</h2>
+        <div class="upcoming-section">
+            {% for event in upcoming_events %}
+            <a href="{% url 'event_detail' event.pk %}" class="event-card">
+                <div class="flex-shrink-0 me-3">
+                    {% if event.image %}
+                        <img src="{{ event.image.url }}" alt="{{ event.title }}" class="rounded shadow-sm" style="width: 70px; height: 70px; object-fit: cover;">
+                    {% else %}
+                        <img src="/media/event_images/default-event.jpg" alt="Default Image" class="rounded shadow-sm" style="width: 70px; height: 70px; object-fit: cover;">
+                    {% endif %}
                 </div>
-            </div>
-            <div class="badge badge-past">Closed</div>
-        </a>
-        {% empty %}
-        <p style="text-align: center; color: var(--muted);">No past events recorded.</p>
-        {% endfor %}
-    </div>
-</div>
 
+                <div class="event-details-wrapper">
+                    <div class="event-info">
+                        <h3>{{ event.title }}</h3>
+                        <div class="event-meta">
+                            <span><i class="far fa-calendar-alt"></i> {{ event.date|date:"M d, Y" }}</span>
+                            <span style="margin-left: 15px;"><i class="fas fa-map-marker-alt"></i> {{ event.location|default:"TBA" }}</span>
+                        </div>
+                    </div>
+                    <div class="badge badge-upcoming">Upcoming</div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="empty-state">
+                <p>No upcoming events yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2 style="color: var(--muted); border-left-color: #ddd;">Past Events</h2>
+        <div class="past-section">
+            {% for event in past_events %}
+            <a href="{% url 'event_detail' event.pk %}" class="event-card">
+                <div class="flex-shrink-0 me-3">
+                    {% if event.image %}
+                        <img src="{{ event.image.url }}" alt="{{ event.title }}" class="rounded shadow-sm" style="width: 70px; height: 70px; object-fit: cover; filter: grayscale(30%);">
+                    {% else %}
+                        <img src="/media/event_images/default-event.jpg" alt="Default Image" class="rounded shadow-sm" style="width: 70px; height: 70px; object-fit: cover; filter: grayscale(30%);">
+                    {% endif %}
+                </div>
+
+                <div class="event-details-wrapper">
+                    <div class="event-info">
+                        <h3 style="color: var(--muted);">{{ event.title }}</h3>
+                        <div class="event-meta">
+                            <span><i class="far fa-calendar-alt"></i> {{ event.date|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                    <div class="badge badge-past">Closed</div>
+                </div>
+            </a>
+            {% empty %}
+            <p style="text-align: center; color: var(--muted); margin: 30px 0;">No past events recorded.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

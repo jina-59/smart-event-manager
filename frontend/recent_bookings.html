@@ -18,17 +18,16 @@
     }
 
     .modern-booking-item {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 20px;
-        padding: 12px;
-        margin-bottom: 20px;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        background: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 15px;
     }
 
     .poster-wrapper {
@@ -94,7 +93,7 @@
     .price-tag {
         font-size: 1.25rem;
         font-weight: 800;
-        color: #212529;
+        color: #0d6efd; /* 메인 컬러 연동 */
     }
 
     .arrow-icon {
@@ -112,7 +111,22 @@
         color: #6c757d;
         border: 1px dashed #dee2e6;
     }
+    
+    .order-code-badge {
+        font-size: 0.75rem;
+        color: #888;
+        font-weight: 600;
+        background: #eee;
+        padding: 2px 8px;
+        border-radius: 6px;
+        display: inline-block;
+        margin-top: 4px;
+    }
+
+    .sidebar-link i { color: #495057; }
+    .sidebar-link.active i { color: white; }
 </style>
+
 
 <div class="card border-0 bg-transparent">
     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -120,52 +134,56 @@
     </div>
 
     {% if recent_bookings %}
-        {% for booking in recent_bookings %}
+        {% regroup recent_bookings by order_code as order_list %}
+        
+        {% for order in order_list %}
             <div class="modern-booking-item shadow-sm"
-                 onclick="location.href='{% url 'event_detail' booking.ticket_type.event.pk %}'">
+                 onclick="location.href='{% url 'booking_detail' order.list.0.id %}'">
 
                 <div class="poster-wrapper">
-                    <img src="https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&w=300&q=80"
-                         alt="Event Poster">
+                    {% if order.list.0.ticket_type.event.image %}
+                        <img src="{{ order.list.0.ticket_type.event.image.url }}" alt="{{ order.list.0.ticket_type.event.title }}">
+                    {% else %}
+                        <img src="/media/event_images/default-event.jpg" alt="Default Event Poster">
+                    {% endif %}
                 </div>
 
                 <div class="event-info-main">
-                    <span class="event-category">
-                        {% if booking.ticket_type.event.category %}
-                            {{ booking.ticket_type.event.category.name }}
-                        {% else %}
-                            Event
-                        {% endif %}
-                    </span>
+                    <div class="order-code-badge mb-1">ID: {{ order.grouper }}</div>
 
-                    <div class="event-name-text">
-                        {{ booking.ticket_type.event.title }}
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="event-name-text m-0">{{ order.list.0.ticket_type.event.title }}</div>
+                        <span class="event-category">
+                            {% if order.list.0.ticket_type.event.category %}{{ order.list.0.ticket_type.event.category.name }}{% else %}Event{% endif %}
+                        </span>
                     </div>
 
-                    <div class="event-meta-text">
+                    <div class="event-meta-text mt-1">
                         <span>
                             <i class="bi bi-calendar-event me-1"></i>
-                            {{ booking.ticket_type.event.date|date:"d M Y" }}
+                            {{ order.list.0.ticket_type.event.date|date:"d M Y" }}
                         </span>
-
                         <span>
                             <i class="bi bi-geo-alt me-1"></i>
-                            {{ booking.ticket_type.event.location }}
+                            {{ order.list.0.ticket_type.event.location }}
                         </span>
-
                         <span>
                             <i class="bi bi-ticket-perforated me-1"></i>
-                            {{ booking.ticket_type.ticket_name }} × {{ booking.quantity }}
+                            {% for booking in order.list %}{{ booking.ticket_type.ticket_name }} × {{ booking.quantity }}{% if not forloop.last %}, {% endif %}{% endfor %}
                         </span>
                     </div>
                 </div>
 
                 <div class="text-end px-3">
-                    <span class="price-tag">
-                        ${{ booking.total_price|floatformat:2 }}
-                    </span>
-                    <div class="small text-success fw-bold mt-1">
-                        Confirmed
+                    <div class="price-tag active-order-total" data-prices="{% for b in order.list %}{{ b.total_price }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                        €0.00
+                    </div>
+                    <div class="mt-1">
+                        {% if order.list.0.status == 'cancelled' %}
+                            <span class="badge bg-danger-subtle text-danger">Cancelled</span>
+                        {% else %}
+                            <span class="badge bg-success-subtle text-success">Confirmed</span>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -181,3 +199,16 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.active-order-total').forEach(node => {
+            const rawPricesStr = node.getAttribute('data-prices');
+            if (rawPricesStr) {
+                const pricesArray = rawPricesStr.split(',');
+                const orderSum = pricesArray.reduce((sum, price) => sum + (parseFloat(price) || 0), 0);
+                node.innerText = '€' + orderSum.toFixed(2);
+            }
+        });
+    });
+</script>

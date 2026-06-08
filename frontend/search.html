@@ -23,7 +23,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'view_all' %}">Explore Events</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'search' %}">Explore Events</a></li>
                     <li class="nav-item"><a class="nav-link text-info" href="{% url 'event_create' %}">Create Event</a></li>
                 </ul>
                 
@@ -48,18 +48,26 @@
     </nav>
 
     <div class="container my-5">
-        <h3 class="fw-bold mb-4">Search Results for "<span class="text-primary">{{ query }}</span>"</h3>
+        {% if is_search %}
+            <h3 class="fw-bold mb-1">Search Results for "<span class="text-primary">{{ query }}</span>"</h3>
+            <div class="text-muted small mb-4">
+                <i class="bi bi-check-circle-fill me-1 text-success"></i> We found <strong>{{ total_count }}</strong> events matching your search.
+            </div>
+        {% else %}
+            <h3 class="fw-bold mb-1">Explore Events 🔍</h3>
+            <div class="text-muted small mb-4">
+                <i class="bi bi-grid-fill me-1 text-primary"></i> Total <strong>{{ total_count }}</strong> events are currently available.
+            </div>
+        {% endif %}
         
         <div class="row g-4">
             {% for event in events %}
             <div class="col-md-4">
                 <div class="card event-card h-100 shadow-sm">
                     {% if event.image %}
-                    <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}" style="height: 200px; object-fit: cover;">
+                        <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}" style="height: 200px; object-fit: cover;">
                     {% else %}
-                    <div class="bg-light d-flex justify-content-center align-items-center" style="height: 200px;">
-                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
-                    </div>
+                        <img src="/media/event_images/default-event.jpg" class="card-img-top" alt="Default Event Image" style="height: 200px; object-fit: cover;">
                     {% endif %}
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title fw-bold">{{ event.title }}</h5>

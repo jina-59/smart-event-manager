@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -13,6 +14,10 @@ class Event(models.Model):
     description = models.TextField()
     date = models.DateTimeField()
     location = models.CharField(max_length=255)
+
+    event_type = models.CharField(max_length=20, default='offline', blank=True, null=True)
+    meeting_link = models.URLField(max_length=500, blank=True, null=True)
+
     organizer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(upload_to='event_images/', null=True, blank=True)
@@ -20,6 +25,17 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title
+    
+    @property
+    def short_location(self):
+        if not self.location:
+            return ""
+        
+        parts = [p.strip() for p in self.location.split(',')] if ',' in self.location else self.location.split()
+        
+        if len(parts) >= 2:
+            return f"{parts[-2]}, {parts[-1]}"
+        return self.location
 
 class TicketType(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='tickets')
@@ -44,10 +60,14 @@ class Booking(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookings')
     ticket_type = models.ForeignKey(TicketType, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
-    booked_at = models.DateTimeField(auto_now_add=True)
+    booked_at = models.DateTimeField(default=timezone.now)
+    order_code = models.CharField(max_length=50, blank=True, null=True)
+
+    STATUS_CHOICES = [('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='confirmed')
 
     def __str__(self):
-        return f"{self.user.username} - {self.ticket_type.event.title} ({self.quantity})"
+        return f"{self.user.username} - {self.ticket_type.event.title} ({self.quantity}) - {self.status}"
 
     
     @property

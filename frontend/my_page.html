@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,20 +50,63 @@
             border-color: #0d6efd !important;
             box-shadow: 0 8px 20px rgba(13, 110, 253, 0.12) !important;
         }
-        
-    
+
+        .sidebar-link i { color: #495057; }
+        .sidebar-link.active i { color: white; }
     </style>
 </head>
 <body>
 
+    {% if messages %}
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080; margin-top: 60px;">
+        {% for message in messages %}
+            {% if 'toast' in message.tags %}
+                <div id="liveToast" class="toast show align-items-center text-white bg-dark border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" style="border-radius: 12px; min-width: 320px; transition: opacity 0.5s ease-in-out;">
+                    <div class="d-flex">
+                        <div class="toast-body p-3 fw-bold">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i> {{ message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white m-auto me-3" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var toastElement = document.getElementById('liveToast');
+            if (toastElement) {
+                setTimeout(function() {
+                    toastElement.style.opacity = "0"; // 투명하게 페이드 아웃 효과
+                    setTimeout(function() {
+                        toastElement.remove(); // HTML 트리에서 완전히 삭제
+                    }, 500);
+                }, 2500); // 2.5초 뒤 자동 소멸 시퀀스 작동
+            }
+        });
+    </script>
+    {% endif %}
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{% url 'home' %}">SmartEvent</a>
-            <div class="d-flex align-items-center text-white">
-                <span class="me-3 small d-none d-md-block">Welcome, <strong>{{ user.username }}</strong></span>
-                <div class="dropdown">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80" 
-                         class="rounded-circle border border-2 border-primary" width="35" height="35" role="button" data-bs-toggle="dropdown">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Explore Events</a></li>
+                    <li class="nav-item"><a class="nav-link text-info" href="{% url 'event_create' %}">Create Event</a></li>
+                </ul>
+                <div class="d-flex gap-2">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'my_page' %}" class="text-white me-3 align-self-center small text-decoration-none fw-bold">
+                            <i class="bi bi-person-circle me-1"></i> Hello, {{ user.username }}
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
+                        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Sign Up</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -88,8 +132,8 @@
             <div class="col-lg-3">
                 <div class="card border-0 shadow-sm p-3">
                     <nav class="nav flex-column gap-2">
-                        <a href="{% url 'my_page' %}" class="sidebar-link active"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</a>
-                        <a href="{% url 'my_page' %}" class="sidebar-link"><i class="bi bi-ticket-perforated me-2"></i>My Tickets</a>
+                        <a href="{% url 'my_page' %}" class="sidebar-link {% if not show_all_tickets %}active{% endif %}"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</a>
+                        <a href="{% url 'my_tickets' %}" class="sidebar-link {% if show_all_tickets %}active{% endif %}"><i class="bi bi-ticket-perforated me-2"></i>My Tickets</a>
                         <a href="{% url 'my_reviews' %}" class="sidebar-link"><i class="bi bi-star me-2"></i>My Reviews</a>
                         <a href="{% url 'profile_settings' %}" class="sidebar-link"><i class="bi bi-person me-2"></i>Profile Settings</a>
                         <hr>
@@ -99,11 +143,12 @@
             </div>
 
             <div class="col-lg-9">
+                {% if not show_all_tickets %}
                 <div class="row g-3 mb-4">
                     <div class="col-md-4">
                         <div class="card stat-card shadow-sm p-3 bg-white">
                             <div class="text-muted small fw-bold">TOTAL EVENTS</div>
-                            <div class="h3 fw-bold">{{ bookings.count }}</div>
+                            <div class="h3 fw-bold">{{ total_events_count }}</div>
                             {% if remaining_this_month_count %}
                                 <div class="text-success small">
                                     <i class="bi bi-arrow-up"></i> {{ remaining_this_month_count }} remaining this month
@@ -133,55 +178,94 @@
                     <div class="col-md-4">
                         <div class="card stat-card shadow-sm p-3 bg-white text-warning">
                             <div class="text-muted small fw-bold">WRITTEN REVIEWS</div>
-                            <div class="h3 fw-bold">{{ reviews.count }}</div>
+                            <div class="h3 fw-bold">
+                                {{ reviews.count }}
+                            </div>
                             <div class="text-muted small">{{ reviews_left_count }} reviews left</div>
                         </div>
                     </div>
                 </div>
+                {% endif %}
 
-                <div class="card border-0 shadow-sm p-4">
-                    <h5 class="fw-bold mb-4">Recent Bookings</h5>
-                    
-                    {% for booking in bookings %}
-                    <div class="p-3 border rounded-3 mb-3 bg-white shadow-sm w-100 booking-clickable"
-                         onclick="location.href='{% url 'booking_detail' booking.id %}'">
-                        <div class="row align-items-center">
-                            <div class="col-md-8 d-flex align-items-center gap-3">
-                                {% if booking.ticket_type.event.image %}
-                                    <img src="{{ booking.ticket_type.event.image.url }}" class="event-history-img">
-                                {% else %}
-                                    <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=100&q=80" class="event-history-img">
-                                {% endif %}
-                                <div>
-                                    <h6 class="fw-bold mb-1 text-dark">{{ booking.ticket_type.event.title }}</h6>
-                                    <p class="small text-muted mb-0">{{ booking.ticket_type.ticket_name }} | {{ booking.quantity }} ticket(s)</p>
+                <div class="content-box">
+                    {% if show_all_tickets %}
+                        {% include 'recent_bookings.html' %}
+                    {% else %}
+                        <div class="card border-0 shadow-sm p-4">
+                            <h5 class="fw-bold mb-4">Recent Bookings</h5>
+                            
+                            {% regroup recent_bookings by order_code as order_list %}
+                            
+                            {% for order in order_list %}
+                            <div class="p-3 border rounded-3 mb-3 bg-white shadow-sm w-100 booking-clickable"
+                                 onclick="location.href='{% url 'booking_detail' order.list.0.id %}'">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8 d-flex align-items-center gap-3">
+                                        
+                                        {% if order.list.0.ticket_type.event.image %}
+                                            <img src="{{ order.list.0.ticket_type.event.image.url }}" class="event-history-img" alt="{{ order.list.0.ticket_type.event.title }}">
+                                        {% else %}
+                                            <img src="/media/event_images/default-event.jpg" class="event-history-img" alt="Default Event Image">
+                                        {% endif %}
+                                        
+                                        <div>
+                                            <h6 class="fw-bold mb-1 text-dark">{{ order.list.0.ticket_type.event.title }}</h6>
+                                            
+                                            <p class="small text-muted mb-0">
+                                                {% for booking in order.list %}
+                                                    {{ booking.ticket_type.ticket_name }} | {{ booking.quantity }} ticket(s){% if not forloop.last %} , {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-end mt-3 mt-md-0">
+                                        <div class="small fw-bold text-muted mb-1">
+                                            BOOKING ID : {{ order.grouper }}
+                                        </div>
+
+                                        <div class="d-flex justify-content-end align-items-center gap-2 mb-2">
+                                            <div class="fw-bold fs-5 text-primary">
+                                                €<script>
+                                                    var total_sum = 0;
+                                                    {% for b in order.list %}
+                                                        total_sum += parseFloat("{{ b.total_price }}");
+                                                    {% endfor %}
+                                                    document.write(total_sum.toFixed(2));
+                                                </script>
+                                            </div>
+                                            
+                                            {% if order.list.0.status == 'cancelled' %}
+                                                <span class="badge bg-danger-subtle text-danger">Cancelled</span>
+                                            {% else %}
+                                                <span class="badge bg-success-subtle text-success">Confirmed</span>
+                                            {% endif %}
+                                        </div>
+
+                                        <div>
+                                            {% if order.list.0.review %}
+                                                <a href="{% url 'my_reviews' %}" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation();">
+                                                    <i class="bi bi-eye me-1"></i>View My Review
+                                                </a>
+                                            {% elif order.list.0.ticket_type.event.date|date:"Y-m-d" <= today|date:"Y-m-d" %}
+                                                <a href="{% url 'create_review' order.list.0.id %}" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation();">
+                                                    <i class="bi bi-pencil-square me-1"></i>Write Review
+                                                </a>
+                                            {% else %}
+                                                <span class="badge bg-secondary-subtle text-secondary small py-2">
+                                                    <i class="bi bi-lock-fill me-1"></i>Review available after event
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 text-end mt-3 mt-md-0">
-                                <div class="small fw-bold text-muted mb-1">{{ booking.ticket_type.event.date|date:"M d, Y" }}</div>
-                                <span class="badge bg-success-subtle text-success mb-2">Confirmed</span>
-                                <div class="mt-2">
-                                    {% if booking.review %}
-                                        <a href="{% url 'my_reviews' %}" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation();">
-                                            <i class="bi bi-eye me-1"></i>View My Review
-                                        </a>
-                                    {% elif booking.ticket_type.event.date|date:"Y-m-d" <= today|date:"Y-m-d" %}
-                                        <a href="{% url 'create_review' booking.id %}" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation();">
-                                            <i class="bi bi-pencil-square me-1"></i>Write Review
-                                        </a>
-                                    {% else %}
-                                        <span class="badge bg-secondary-subtle text-secondary small py-2">
-                                            <i class="bi bi-lock-fill me-1"></i>Review available after event
-                                        </span>
-                                    {% endif %}
-                                </div>
-                            </div>
+                            {% empty %}
+                            <p class="text-muted text-center py-4">No recent bookings found.</p>
+                            {% endfor %}
                         </div>
-                    </div>
-                    {% empty %}
-                    <p class="text-center text-muted py-4">No recent bookings found.</p>
-                    {% endfor %}
+                    {% endif %}
                 </div>
+
             </div>
         </div>
     </div>

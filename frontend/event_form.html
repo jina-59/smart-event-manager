@@ -39,6 +39,10 @@
                     <label class="form-label fw-semibold">Event Title</label>
                     <input type="text" name="title" value="{{ event.title|default:'' }}" class="form-control" placeholder="e.g. Paris Data Science Meetup" required>
                 </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Event Description</label>
+                    <textarea name="description" class="form-control" rows="4" placeholder="Write something about this event..." required>{{ event.description|default:'' }}</textarea>
+                </div>
 
                 <div class="row mb-4">
                     <div class="col-md-6">
@@ -53,8 +57,8 @@
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Event Date</label>
-                        <input type="date" name="date" value="{{ event.date|date:'Y-m-d' }}" class="form-control" required>
+                        <label class="form-label fw-semibold">Event Date & Time</label>
+                        <input type="datetime-local" name="date" value="{{ event.date|date:'Y-m-d\TH:i' }}" class="form-control" required>
                     </div>
                 </div>
 
@@ -85,19 +89,32 @@
 
                 <div id="linkField" class="mb-4 d-none">
                     <label class="form-label fw-semibold">Online Meeting Link</label>
-                    <input type="url" class="form-control" placeholder="https://zoom.us/j/...">
+                    <input type="url" name="meeting_link" class="form-control" placeholder="https://zoom.us/j/...">
                 </div>
 
                 <div class="section-title h5 text-primary">Ticketing</div>
-                <div class="row g-3 mb-5">
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Standard Ticket Price (€)</label>
-                        <input type="number" name="price" class="form-control" placeholder="50" required>
+                
+                <div id="ticketContainer" class="mb-3">
+                    <div class="row g-3 mb-2 ticket-row">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Ticket Name</label>
+                            <input type="text" name="ticket_name[]" class="form-control" value="Standard" placeholder="e.g. Standard, VIP, Early Bird" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Price (€)</label>
+                            <input type="number" name="ticket_price[]" class="form-control" placeholder="50" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Capacity</label>
+                            <input type="number" name="ticket_quota[]" class="form-control" placeholder="100" required>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Total Capacity</label>
-                        <input type="number" name="quota" class="form-control" placeholder="100" required>
-                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <button type="button" id="addTicketBtn" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i> Add More Ticket Type
+                    </button>
                 </div>
 
                 <div class="d-grid gap-2">
@@ -119,18 +136,78 @@
             if (offlineRadio.checked) {
                 locationField.classList.remove('d-none');
                 linkField.classList.add('d-none');
+                linkField.querySelector('input').removeAttribute('required');
+                locationField.querySelector('input').setAttribute('required', 'required');
             } else if (onlineRadio.checked) {
                 locationField.classList.add('d-none');
                 linkField.classList.remove('d-none');
+                locationField.querySelector('input').removeAttribute('required');
+                linkField.querySelector('input').setAttribute('required', 'required');
             } else if (hybridRadio.checked) {
                 locationField.classList.remove('d-none');
                 linkField.classList.remove('d-none');
+                locationField.querySelector('input').setAttribute('required', 'required');
+                linkField.querySelector('input').setAttribute('required', 'required');
             }
         }
 
         [offlineRadio, onlineRadio, hybridRadio].forEach(radio => {
-            radio.addEventListener('change', toggleFields);
+            if (radio) {
+                radio.addEventListener('change', toggleFields);
+            }
         });
+
+        document.addEventListener('DOMContentLoaded', toggleFields);
+
+        async function initAutocomplete() {
+            const locationInput = document.querySelector('input[name="location"]');
+            
+            if (locationInput) {
+                const { Autocomplete } = await google.maps.importLibrary("places");
+                
+                const autocomplete = new Autocomplete(locationInput, {
+                    fields: ["address_components", "formatted_address", "geometry"],
+                    types: ["geocode", "establishment"],
+                });
+
+                autocomplete.addListener('place_changed', function() {
+                    const place = autocomplete.getPlace();
+                    console.log("Selected Place:", place.formatted_address);
+                });
+            }
+        }
+        const addTicketBtn = document.getElementById('addTicketBtn');
+        if (addTicketBtn) {
+            addTicketBtn.addEventListener('click', function() {
+            const container = document.getElementById('ticketContainer');
+            
+            const newRow = document.createElement('div');
+            newRow.className = 'row g-3 mb-2 ticket-row border-top pt-3 mt-2';
+            newRow.innerHTML = `
+                <div class="col-md-4">
+                    <input type="text" name="ticket_name[]" class="form-control" placeholder="e.g. VIP, Early Bird" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="number" name="ticket_price[]" class="form-control" placeholder="100" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" name="ticket_quota[]" class="form-control" placeholder="50" required>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" class="btn btn-outline-danger w-100 remove-ticket-btn" title="Delete Ticket Type">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            `;
+            container.appendChild(newRow);
+
+            newRow.querySelector('.remove-ticket-btn').addEventListener('click', function() {
+                newRow.remove();
+            });
+        });
+        }
     </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvW0-sPS1_C5yLH8XVxWwEVoW9Q6rfOmA&v=beta&loading=async&callback=initAutocomplete"></script>
 </body>
 </html>
